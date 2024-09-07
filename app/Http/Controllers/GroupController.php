@@ -27,7 +27,7 @@ class GroupController extends GroupFederationController
     public function __construct()
     {
         $this->middleware('auth');
-        abort_unless(config('groups.enabled'), 404);
+        $this->middleware('hasConfig:groups.enabled');
     }
 
     public function index(Request $request)

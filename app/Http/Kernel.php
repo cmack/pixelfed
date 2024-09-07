@@ -71,6 +71,7 @@ class Kernel extends HttpKernel
         'interstitial'  => \App\Http\Middleware\AccountInterstitial::class,
         'scopes'        => \Laravel\Passport\Http\Middleware\CheckScopes::class,
         'scope'         => \Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
+        'hasConfig'     => \App\Http\Middleware\HasConfig::class,
         // 'restricted'    => \App\Http\Middleware\RestrictedAccess::class,
     ];
 }
