@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\CuratedRegisterController;
+use App\Http\Middleware\EnsureCuratedRegistration;
+
 Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofactor', 'localization'])->group(function () {
     Route::get('/', 'SiteController@home')->name('timeline.personal');
     Route::redirect('/home', '/')->name('home');
@@ -31,17 +34,21 @@ Route::domain(config('pixelfed.domain.app'))->middleware(['validemail', 'twofact
     Route::post('auth/pci/{id}/{code}', 'ParentalControlsController@inviteRegisterStore');
 
     Route::get('auth/sign_up', 'SiteController@curatedOnboarding')->name('auth.curated-onboarding');
-    Route::post('auth/sign_up', 'CuratedRegisterController@proceed');
-    Route::get('auth/sign_up/concierge/response-sent', 'CuratedRegisterController@conciergeResponseSent');
-    Route::get('auth/sign_up/concierge', 'CuratedRegisterController@concierge');
-    Route::post('auth/sign_up/concierge', 'CuratedRegisterController@conciergeStore');
-    Route::get('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormShow');
-    Route::post('auth/sign_up/concierge/form', 'CuratedRegisterController@conciergeFormStore');
-    Route::get('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmail');
-    Route::post('auth/sign_up/confirm', 'CuratedRegisterController@confirmEmailHandle');
-    Route::get('auth/sign_up/confirmed', 'CuratedRegisterController@emailConfirmed');
-    Route::get('auth/sign_up/resend-confirmation', 'CuratedRegisterController@resendConfirmation');
-    Route::post('auth/sign_up/resend-confirmation', 'CuratedRegisterController@resendConfirmationProcess');
+
+    Route::controller(CuratedRegisterController::class)->group(function () {
+        Route::post('auth/sign_up', 'proceed');
+        Route::get('auth/sign_up/concierge/response-sent', 'conciergeResponseSent');
+        Route::get('auth/sign_up/concierge', 'concierge');
+        Route::post('auth/sign_up/concierge', 'conciergeStore');
+        Route::get('auth/sign_up/concierge/form', 'conciergeFormShow');
+        Route::post('auth/sign_up/concierge/form', 'conciergeFormStore');
+        Route::get('auth/sign_up/confirm', 'confirmEmail');
+        Route::post('auth/sign_up/confirm', 'confirmEmailHandle');
+        Route::get('auth/sign_up/confirmed', 'emailConfirmed');
+        Route::get('auth/sign_up/resend-confirmation', 'resendConfirmation');
+        Route::post('auth/sign_up/resend-confirmation', 'resendConfirmationProcess');
+    })->middleware(EnsureCuratedRegistration::class);
+
     Route::get('auth/forgot/email', 'UserEmailForgotController@index')->name('email.forgot');
     Route::post('auth/forgot/email', 'UserEmailForgotController@store')->middleware('throttle:10,900,forgotEmail');
 

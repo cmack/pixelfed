@@ -17,17 +17,6 @@ use App\Jobs\CuratedOnboarding\CuratedOnboardingNotifyAdminNewApplicationPipelin
 
 class CuratedRegisterController extends Controller
 {
-    public function __construct()
-    {
-        abort_unless((bool) config_cache('instance.curated_registration.enabled'), 404);
-
-        if((bool) config_cache('pixelfed.open_registration')) {
-            abort_if(config('instance.curated_registration.state.only_enabled_on_closed_reg'), 404);
-        } else {
-            abort_unless(config('instance.curated_registration.state.fallback_on_closed_reg'), 404);
-        }
-    }
-
     public function index(Request $request)
     {
         abort_if($request->user(), 404);
